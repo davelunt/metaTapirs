@@ -1,0 +1,58 @@
+# ==============================================================================
+# metaTapirs
+# A reproducible metabarcoding workflow for nanopre data
+# ==============================================================================
+
+configfile: "config/config.yaml"
+
+# ------------------------------------------------------------------------------
+# LIBRARY AND SAMPLE INFORMATION
+# ------------------------------------------------------------------------------
+
+import pandas as pd
+
+libraries_df = pd.read_table(config['samples'], header = None)  # Pull in libraries and samples from tsv
+
+# Generate library wildcards
+LIBRARIES = list(libraries_df[0])  # create list from column of dataframe
+LIBRARIES = list(dict.fromkeys(LIBRARIES))  # into a dictionary to remove duplicates
+
+# Generate samples wildcards
+SAMPLES = list(libraries_df[1])  # create list from column of dataframe
+SAMPLES = list(dict.fromkeys(SAMPLES))  # dipping into a dictionary to remove duplicates
+
+# Generate list of legitimate combinations
+# NB can this be replaced by zip command?
+with open(config['samples']) as infile:
+    real_combos = []
+    for line in infile:
+        real_combos.append(line.strip().replace('\t', '/'))
+
+# ------------------------------------------------------------------------------
+# CONDITIONAL RULE ALL
+# this needs fixing
+# ------------------------------------------------------------------------------
+
+myoutput = list()
+
+# fix this: cluster method is vsearch specific for illumina, remove
+blast = "results/" + config['my_experiment'] + "_blast" + str(config['MLCA_identity']) + "_" + config['cluster_method'] + ".tsv",
+kraken2 = "results/" + config['my_experiment'] + "_kraken2_conf" + str(config['kraken2_confidence']).split('.')[1] + "_" + config['cluster_method'] + ".tsv"
+
+if config["BLAST"]=true:
+    myoutput.append(blast)
+
+if config["KRAKEN"]=true:
+    myoutput.append(kraken2)
+
+rule all:
+    input:
+        myoutput
+
+# ------------------------------------------------------------------------------
+# INCLUCE CONDITIONAL RULE FILES
+# ------------------------------------------------------------------------------
+
+include: "rules/blast.smk" if config["BLAST"]=true
+include: "rules/kraken2.smk" if config["KRAKEN"]=true
+include: "rules/lca.smk" if config["MLCA"]=true

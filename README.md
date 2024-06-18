@@ -1,4 +1,4 @@
 # metaTapirs
-workflow for metabarcoding
+workflow for metabarcoding, especially of nanopore data
 
 in development

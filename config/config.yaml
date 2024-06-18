@@ -1,0 +1,87 @@
+# ==================================================
+#  METATAPIRS: CONFIGFILE
+# ==================================================
+# Best practice is to run your experiment from this config file, not altering the workflow directly.
+# You can include and exclude analysis methods by changing true/false in the sections below
+# Keep this file associated with the results generated
+
+my_experiment: "Hull_test"  # the experiment name, no_spaces
+
+samples: "config/samples.tsv"  # location and name of sample list
+
+conda: "../envs/env.yaml"  # leave this unedited
+
+# taxonomic rank reporting
+# options: "domain", "phylum", "class", "order", "family", "genus", "species"
+lowest_taxonomic_rank: 'species'  # assignments to ranks below this rank are moved up to this rank
+highest_taxonomic_rank: 'order'  # assignments to ranks above this rank are classed as unassigned
+
+# -----------------------------------------------
+# LOCATION OF INPUT DATA FILES
+# -----------------------------------------------
+
+input_data: "resources/libraries"
+# should contain a library directory containing your
+# demultiplexed .fastq.gz sample files for analysis
+
+#-------------------------------------------------------------------------------
+# DATABASE LOCATIONS
+#-------------------------------------------------------------------------------
+# Place your reference databases in resources/databases/
+# or edit to specify the location
+
+# BLAST
+blast_db: "resources/databases/12s_fish_blast_db/12s_fish"
+
+# KRAKEN 2
+kraken2_db: "resources/databases/12s_fish_kraken2_db"
+
+# TAXONOMY
+taxdump: "resources/databases/new_taxdump"
+
+# ------------------------------------------------------------------------------
+# FASTP TRIMMING AND MERGING VARIABLES
+# ------------------------------------------------------------------------------
+
+FASTP_len_required: 500  # reads shorter than this will be discarded
+FASTP_qual_phred: 12  # quality value that a base is qualified. 30 means phred quality >=Q30 is qualified
+
+FASTP_max_len1: 106  # this is the amplicon size
+FASTP_max_len2: 106  # this is the amplicon size
+FASTP_trim_front1: 20  # this is the forward primer length
+FASTP_trim_front2: 20  # this is the reverse primer length
+FASTP_unqualified_percent_limit: 40  # maximum percentage bases allowed to be unqualified
+FASTP_window_size: 5  # sliding window size for head and tail quality based cuts
+
+FASTP_poly_g_min: 10  # minimum 3' poly g bases to be trimmed
+FASTP_poly_x_min: 10  # minimum 3' poly x (any base) bases to be trimmed
+
+
+# ------------------------------------------------------------------------------
+# BLAST VARIABLES
+# ------------------------------------------------------------------------------
+
+BLAST: true  # true or false to include or exclude blast analysis
+BLAST_max_target_seqs: 50
+BLAST_min_perc_ident: 75
+BLAST_min_evalue: 1e-20
+BLAST_threads: 2
+
+# ------------------------------------------------------------------------------
+# MLCA VARIABLES
+# ------------------------------------------------------------------------------
+
+MLCA: true # true or false to include or exclude MLCA analysis
+MLCA_bitscore: 2
+MLCA_identity: 98
+MCLA_coverage: 90
+MLCA_majority: 80
+MLCA_hits: 1
+
+# ------------------------------------------------------------------------------
+# KRAKEN2 VARIABLES
+# ------------------------------------------------------------------------------
+
+KRAKEN: true  # true or false to include or exclude kraken2 analysis
+kraken2_confidence: 0.0
+kraken2_threads: 2
