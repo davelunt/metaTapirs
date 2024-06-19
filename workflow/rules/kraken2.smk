@@ -4,6 +4,7 @@
 
 # ------------------------------------------------------------------------------
 # KRAKEN 2 TAXONOMIC ASSIGNMENT
+# fix this: some is from vsearch rereplicate, drop?
 # ------------------------------------------------------------------------------
 
 rule kraken2:
@@ -40,6 +41,7 @@ rule taxonomy_to_kraken2:
 
 # ------------------------------------------------------------------------------
 # KRAKEN 2 TO TSV
+# fix this: cluster method specific to illumina
 # ------------------------------------------------------------------------------
 
 rule kraken2_to_tsv:

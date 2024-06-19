@@ -85,3 +85,15 @@ MLCA_hits: 1
 KRAKEN: true  # true or false to include or exclude kraken2 analysis
 kraken2_confidence: 0.0
 kraken2_threads: 2
+
+# ------------------------------------------------------------------------------
+# REPORT VARIABLES
+# ------------------------------------------------------------------------------
+
+rawdata_seqkit-stats: true # description of data before workflow begins filtering and analysis
+fastp-trimmed_seqkit-stats: true # description of data after FASTP trimming by length and quality
+deduplicated_seqkit-stats: true # description of data after deduplication
+
+
+
+

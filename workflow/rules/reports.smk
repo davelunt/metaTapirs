@@ -1,5 +1,5 @@
 # ==================================================
-# TAPIRS REPORT GENERATION
+# METATAPIRS REPORT GENERATION
 # ==================================================
 # A workflow reporting on QC and taxonomic assignment
 # fastp reports are written from the qc.smk rule
@@ -33,80 +33,33 @@ rule plot_workflow_DAG:
 # Conda, archive environment
 # --------------------------------------------------
 
-rule conda_env:
+rule conda_archive-env:
+    input:
+        "envs/{ENVNAME}.yaml"
     output:
-        "reports/archived_envs/tapirs.yaml"
+        "results/archived_envs/{ENVNAME}.yaml"
     shell:
-        "conda env export --file {output}"
+        "conda env export -n {input} > {output}"
 
 # --------------------------------------------------
 # Seqkit, write report on 02_trimmed files
 # for each library make a report on all files
 # --------------------------------------------------
 
-# rule seqkit_stats_trimmedfiles:
-#    conda:
-#        "../envs/environment.yaml"
-#     input:
-#         "results/02_trimmed/{LIBRARIES}/{SAMPLES}"
-#     threads:
-#         4  # -j
-#     output:
-#         tsv = "reports/seqkit/{LIBRARIES}/{SAMPLES}.trimmed.seqkit-stats.tsv",
-#         md = "reports/seqkit/{LIBRARIES}/{SAMPLES}.trimmed.seqkit-stats.md",
-#     shell:
-#         """
-#         seqkit stats {input}*.fastq -b -e -T -j 4 -o {output.tsv} ;
-#         csvtk csv2md {output.tsv} -t -o {output.md}
-#         """
-
-# -----------------------------------------------------
-# vsearch, readstats report on 03_merged concatenated fastq
-# -----------------------------------------------------
-
-rule vsearch_fastq_readstats:
+rule seqkit-stats_trimmedfiles:
     input:
-        expand("results/03_merged/{LIBRARIES}/{SAMPLES}.concat.fastq", LIBRARIES = LIBRARIES, SAMPLES=SAMPLES)
+        "results/02_trimmed/{LIBRARIES}/{SAMPLES}.fastq.gz"
+    threads:
+        4  # -j
     output:
-        fqreadstats = "reports/vsearch/{LIBRARIES}/{SAMPLES}.concat.fq_readstats"
+        tsv = "results/seqkit/{LIBRARIES}/{SAMPLES}.trimmed.seqkit-stats.tsv",
+        md = "results/seqkit/{LIBRARIES}/{SAMPLES}.trimmed.seqkit-stats.md",
     shell:
         """
-        vsearch --fastq_stats {input} --log {output.fqreadstats}
+        seqkit stats -i {input} -b -e -T -j {threads} -o {output.tsv} ;
+        csvtk csv2md {output.tsv} -t -o {output.md}
         """
 
-# -----------------------------------------------------
-# vsearch, eestats report on 03_merged concatenated fastq
-# -----------------------------------------------------
-
-rule vsearch_fastq_eestats:
-    input:
-        expand("results/03_merged/{LIBRARIES}/{SAMPLES}.concat.fastq", LIBRARIES = LIBRARIES, SAMPLES=SAMPLES)
-    output:
-        fqreport = "reports/vsearch/{LIBRARIES}/{SAMPLES}.concat.fq_eestats",
-    shell:
-        """
-        vsearch --fastq_eestats {input} --output {output.fqreport};
-        """
-
-#---------------------------------------------------
-# Seqkit, report on 03_merged concatenated fasta
-#---------------------------------------------------
-
-# rule seqkit_stats_mergedfiles:
-#    conda:
-#        "../envs/environment.yaml"
-#     input:
-#        "results/03_merged/{LIBRARIES}/{SAMPLES}.concat.fasta"
-#     threads:
-#         12
-#     output:
-#         tsv = "reports/seqkit/{library}.concat.seqkit-stats.tsv",
-#         md = "reports/seqkit/{library}.concat.seqkit-stats.md",
-#     shell:
-#         """
-#         seqkit stats {input} -b -e -T -j {threads} -o {output.tsv} ;
-#         csvtk csv2md {output.tsv} -t -o {output.md} ;
-#         """
 
 #---------------------------------------------------
 # MultiQC, aggregate QC reports as html report
